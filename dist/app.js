@@ -223,13 +223,14 @@ function checkAndSendDeaths(summoner) {
             const oldEls = summoner.gameDeathRank.elements;
             if (ngdr.elements[0].key == oldEls[0].key) {
                 if (ngdr.elements[0].value != oldEls[0].value) {
-                    sendAnnouce(`${summoner.discordMention} possui um novo recorde pessoal de mortes em uma única partida, liderando com ${getChampionName(ngdr.elements[0].key)}, morrendo ${ngdr.elements[0].value} vezes!`);
+                    sendAnnouce(`${summoner.discordMention} possui um novo recorde pessoal de mortes em uma única partida, liderando com ${ngdr.elements[0].key}, morrendo ${ngdr.elements[0].value} vezes!`);
                 }
             }
             else {
-                sendAnnouce(`${summoner.discordMention} bateu o próprio recorde pessoal de mortes com ${getChampionName(ngdr.elements[0].key)}, morrendo ${ngdr.elements[0].value} em uma única partida!`);
+                sendAnnouce(`${summoner.discordMention} bateu o próprio recorde pessoal de mortes com ${ngdr.elements[0].key}, morrendo ${ngdr.elements[0].value} em uma única partida!`);
             }
         }
+        summoner.gameDeathRank = ngdr;
         for (let i in ranks) {
             let newRank;
             switch (ranks[i].name) {
@@ -360,7 +361,7 @@ function updatePlaying(summoner) {
 function getActualMatch(summoner, participants, gameMode, gameQueueConfigId, gameId) {
     let actualChampion = "";
     for (let i in participants) {
-        if (participants[i].summonerName == summoner.name) {
+        if (normalizeSpaces(participants[i].summonerName.toLowerCase()) == summoner.name.toLowerCase()) {
             actualChampion = getChampionName(participants[i].championId);
             break;
         }
