@@ -4,7 +4,7 @@ import { sleep, timeBetweenDates, compareDates } from "./utils";
 
 const fetch = require('node-fetch');
 
-const api_key = "RGAPI-836f78c3-82ed-4be6-aa83-5effc2156529";
+const api_key = "RGAPI-ad32e0ef-1d12-44ef-a893-8786bb4b6171";
 
 const champions: Champion[] = [];
 const loadedMatchs: Match[] = [];
