@@ -15,8 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const connection_1 = __importDefault(require("./connection"));
 const discord_js_1 = require("discord.js");
 const utils_1 = require("./utils");
+const config_json_1 = require("./config.json");
 const fetch = require('node-fetch');
-const api_key = "RGAPI-ad32e0ef-1d12-44ef-a893-8786bb4b6171";
 const champions = [];
 const loadedMatchs = [];
 const summoners = [];
@@ -402,7 +402,7 @@ function getMatch(matchId, sn) {
                 return loadedMatchs[i];
             }
         }
-        const response = yield request(`https://americas.api.riotgames.com/lol/match/v5/matches/${matchId}?api_key=${api_key}`);
+        const response = yield request(`https://americas.api.riotgames.com/lol/match/v5/matches/${matchId}?api_key=${config_json_1.api_key}`);
         const match = new Match(response.info.gameId);
         const parts = response.info.participants;
         for (let i in parts) {
@@ -424,12 +424,12 @@ function containsSummoner(name) {
 }
 function getLastMatchs(puuid, count) {
     return __awaiter(this, void 0, void 0, function* () {
-        return yield request(`https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=${count}&api_key=${api_key}`);
+        return yield request(`https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=${count}&api_key=${config_json_1.api_key}`);
     });
 }
 function getCurrentGame(summonerId) {
     return __awaiter(this, void 0, void 0, function* () {
-        return yield request(`https://br1.api.riotgames.com/lol/spectator/v4/active-games/by-summoner/${summonerId}?api_key=${api_key}`);
+        return yield request(`https://br1.api.riotgames.com/lol/spectator/v4/active-games/by-summoner/${summonerId}?api_key=${config_json_1.api_key}`);
     });
 }
 function loadSummoners() {
@@ -444,7 +444,7 @@ function loadSummoners() {
 }
 function getSummonerIds(name) {
     return __awaiter(this, void 0, void 0, function* () {
-        const response = yield request(`https://br1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${encodeURIComponent(name)}?api_key=${api_key}`);
+        const response = yield request(`https://br1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${encodeURIComponent(name)}?api_key=${config_json_1.api_key}`);
         return { id: response.id, puuid: response.puuid, accountId: response.accountId };
     });
 }

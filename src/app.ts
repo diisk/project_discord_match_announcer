@@ -1,10 +1,9 @@
 import connection from "./connection";
 import { Client, Intents } from 'discord.js';
 import { sleep, timeBetweenDates, compareDates } from "./utils";
+import {api_key} from "./config.json";
 
 const fetch = require('node-fetch');
-
-const api_key = "RGAPI-ad32e0ef-1d12-44ef-a893-8786bb4b6171";
 
 const champions: Champion[] = [];
 const loadedMatchs: Match[] = [];
