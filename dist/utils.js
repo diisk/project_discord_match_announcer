@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.normalizeToString = exports.randomString = exports.timeBetweenDates = exports.compareDates = exports.shuffleArray = exports.LoopFunction = exports.sleep = exports.chance = exports.randomNumber = void 0;
+exports.normalizeSpaces = exports.normalizeToString = exports.randomString = exports.timeBetweenDates = exports.compareDates = exports.shuffleArray = exports.LoopFunction = exports.sleep = exports.chance = exports.randomNumber = void 0;
 class LoopFunction {
     constructor(func, miliseconds) {
         this.interval = null;
@@ -102,4 +102,14 @@ function normalizeToString(str) {
     return str.replace(/\\/g, "\\\\").replace(/\"/g, "\\\"");
 }
 exports.normalizeToString = normalizeToString;
+function normalizeSpaces(str) {
+    while (str.startsWith(' ')) {
+        str = str.substring(1, str.length);
+    }
+    while (str.endsWith(' ')) {
+        str = str.substring(0, str.length - 1);
+    }
+    return str;
+}
+exports.normalizeSpaces = normalizeSpaces;
 //# sourceMappingURL=utils.js.map

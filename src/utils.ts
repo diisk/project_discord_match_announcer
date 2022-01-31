@@ -106,6 +106,16 @@ function normalizeToString(str: string) {
     return str.replace(/\\/g, "\\\\").replace(/\"/g, "\\\"");
 }
 
+function normalizeSpaces(str: string) {
+    while (str.startsWith(' ')) {
+        str = str.substring(1, str.length);
+    }
+    while (str.endsWith(' ')) {
+        str = str.substring(0, str.length - 1);
+    }
+    return str;
+}
+
 export {
     randomNumber,
     chance,
@@ -115,5 +125,6 @@ export {
     compareDates,
     timeBetweenDates,
     randomString,
-    normalizeToString
+    normalizeToString,
+    normalizeSpaces
 };
