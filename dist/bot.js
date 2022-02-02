@@ -20,15 +20,16 @@ const exampleEmbed = new discord_js_1.MessageEmbed()
     .setTimestamp();
 //.setFooter({ text: 'Some footer text here', iconURL: 'https://i.imgur.com/AfFp7pu.png' });
 class Bot {
-    static sendRankAnnounce(rank, oldSummoner, newSummoner) {
+    static sendRankAnnounce(rank, notes) {
         const { title, description, thumbURL, fields } = getRankData(rank);
+        console.log(fields);
         const embed = new discord_js_1.MessageEmbed()
             .setColor('#000000')
             .setTitle(title)
             .setAuthor({ name: 'Deathspectator', iconURL: config_json_1.karthusImageURL })
             .setDescription(description)
             .addFields(fields)
-            .addField("Obs:", `${newSummoner.discordMention} acabou de superar ${oldSummoner.discordMention} tomando seu 1º lugar no ranking.`)
+            .addField("Obs:", notes)
             .setTimestamp();
         if (thumbURL) {
             embed.setThumbnail(thumbURL);
@@ -51,7 +52,7 @@ class Bot {
             .setThumbnail(config_json_1.amumuImageURL)
             .setTitle(`Jogando ${(queueName ? queueName : gameMode).toLowerCase()} solo`)
             .setAuthor({ name: 'Deathspectator', iconURL: config_json_1.karthusImageURL })
-            .setDescription(summoner.discordMention)
+            .setDescription(`${summoner.name} vulgo ${summoner.discordMention}`)
             .addField("Campeão", championName)
             .setTimestamp();
         announces.push(embed);
@@ -102,6 +103,32 @@ class Bot {
                     client.channels.cache.get(config_json_1.channelId).send({ embeds: [embed] });
                 }
             }, 200);
+            // const rank:Rank = {
+            // 	name:"Zeri",
+            // 	elements:[
+            // 		{
+            // 			key:{name:"MiB DiisK"},
+            // 			value:80
+            // 		},
+            // 		{
+            // 			key:{name:"MiB DiisK"},
+            // 			value:80
+            // 		},
+            // 		{
+            // 			key:{name:"MiB DiisK"},
+            // 			value:80
+            // 		},
+            // 		{
+            // 			key:{name:"MiB DiisK"},
+            // 			value:80
+            // 		},
+            // 		{
+            // 			key:{name:"MiB DiisK"},
+            // 			value:80
+            // 		},
+            // 	]
+            // }
+            // this.sendRankAnnounce(rank,"TESTE");
         });
     }
 }
@@ -125,13 +152,13 @@ function getRankData(rank) {
                 }
                 if (i == 0) {
                     rankData.fields.push({ name: "Pos/Nick", value: `1. ${rank.elements[i].key.summoner.name}`, inline: true });
+                    rankData.fields.push({ name: "Mortes", value: rank.elements[i].value + "", inline: true });
                     rankData.fields.push({ name: "Campeão", value: championName, inline: true });
-                    rankData.fields.push({ name: "Mortes", value: rank.elements[i].value, inline: true });
                 }
                 else {
-                    rankData.fields.push({ name: "\u200B", value: `${i + 1}. ${rank.elements[i].key.summoner.name}`, inline: true });
-                    rankData.fields.push({ name: "\u200B", value: championName, inline: true });
-                    rankData.fields.push({ name: "\u200B", value: rank.elements[i].value, inline: true });
+                    rankData.fields.push({ name: '\u200B', value: `${i + 1}. ${rank.elements[i].key.summoner.name}`, inline: true });
+                    rankData.fields.push({ name: '\u200B', value: rank.elements[i].value + "", inline: true });
+                    rankData.fields.push({ name: '\u200B', value: championName, inline: true });
                 }
             }
             break;
@@ -153,12 +180,12 @@ function getRankData(rank) {
                 if (i == 0) {
                     rankData.fields.push({ name: "Posição", value: '1.', inline: true });
                     rankData.fields.push({ name: "Campeão", value: championName, inline: true });
-                    rankData.fields.push({ name: "Mortes", value: rank.elements[i].value, inline: true });
+                    rankData.fields.push({ name: "Mortes", value: rank.elements[i].value + "", inline: true });
                 }
                 else {
                     rankData.fields.push({ name: "\u200B", value: `${i + 1}.`, inline: true });
                     rankData.fields.push({ name: "\u200B", value: championName, inline: true });
-                    rankData.fields.push({ name: "\u200B", value: rank.elements[i].value, inline: true });
+                    rankData.fields.push({ name: "\u200B", value: rank.elements[i].value + "", inline: true });
                 }
             }
             break;
@@ -172,13 +199,13 @@ function getRankData(rank) {
             for (let i = 0; i < rank.elements.length; i++) {
                 if (i == 0) {
                     rankData.fields.push({ name: "Posição", value: '1.', inline: true });
+                    rankData.fields.push({ name: "Mortes", value: rank.elements[i].value + "", inline: true });
                     rankData.fields.push({ name: "Nick", value: rank.elements[i].key.name, inline: true });
-                    rankData.fields.push({ name: "Mortes", value: rank.elements[i].value, inline: true });
                 }
                 else {
                     rankData.fields.push({ name: "\u200B", value: `${i + 1}.`, inline: true });
+                    rankData.fields.push({ name: "\u200B", value: rank.elements[i].value + "", inline: true });
                     rankData.fields.push({ name: "\u200B", value: rank.elements[i].key.name, inline: true });
-                    rankData.fields.push({ name: "\u200B", value: rank.elements[i].value, inline: true });
                 }
             }
             break;
@@ -194,20 +221,20 @@ function getRankData(rank) {
             }
             rankData = {
                 title: "Top 5 (Geral)",
-                description: `Total de mortes com o ${champ}.`,
+                description: `Total de mortes com ${champ}.`,
                 thumbURL: getChampionImageURL(champId),
                 fields: []
             };
             for (let i = 0; i < rank.elements.length; i++) {
                 if (i == 0) {
                     rankData.fields.push({ name: "Posição", value: '1.', inline: true });
+                    rankData.fields.push({ name: "Mortes", value: rank.elements[i].value + "", inline: true });
                     rankData.fields.push({ name: "Nick", value: rank.elements[i].key.name, inline: true });
-                    rankData.fields.push({ name: "Mortes", value: rank.elements[i].value, inline: true });
                 }
                 else {
                     rankData.fields.push({ name: "\u200B", value: `${i + 1}.`, inline: true });
+                    rankData.fields.push({ name: "\u200B", value: rank.elements[i].value + "", inline: true });
                     rankData.fields.push({ name: "\u200B", value: rank.elements[i].key.name, inline: true });
-                    rankData.fields.push({ name: "\u200B", value: rank.elements[i].value, inline: true });
                 }
             }
             break;

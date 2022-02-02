@@ -17,6 +17,7 @@ const request_1 = require("./request");
 const connection_1 = __importDefault(require("./connection"));
 const utils_1 = require("./utils");
 const match_1 = __importDefault(require("./match"));
+const bot_1 = __importDefault(require("./bot"));
 const summoners = [];
 class Summoner {
     constructor(name, discordTag, dbId, summonerIds, gameDeathRank) {
@@ -50,14 +51,13 @@ class Summoner {
                                     gameId: gameId,
                                     championId: participants[i].championId,
                                 };
-                                sum.lastPlayed = null;
                             }
                         }
                         match_1.default.addCurrentMatch(gameId, gameMode, gameQueueConfigId);
                     }
                 }
                 else {
-                    if (!this.lastPlayed) {
+                    if (this.actualMatch) {
                         this.actualMatch = null;
                         this.lastPlayed = new Date();
                     }
@@ -90,15 +90,11 @@ class Summoner {
                 const oldEls = this.gameDeathRank.elements;
                 if (ngdr.elements[0].key == oldEls[0].key) {
                     if (ngdr.elements[0].value != oldEls[0].value) {
-                        /*Bot.sendAnnounce(
-                            `${this.discordMention} possui um novo recorde pessoal de mortes em uma única partida, liderando com ${ngdr.elements[0].key}, morrendo ${ngdr.elements[0].value} vezes!`
-                        );*/
+                        bot_1.default.sendRankAnnounce(ngdr, `${this.discordMention} possui um novo recorde pessoal de mortes em uma única partida, liderando com ${ngdr.elements[0].key}, morrendo ${ngdr.elements[0].value} vezes!`);
                     }
                 }
                 else {
-                    /*Bot.sendAnnounce(
-                        `${summoner.discordMention} bateu o próprio recorde pessoal de mortes com ${ngdr.elements[0].key}, morrendo ${ngdr.elements[0].value} em uma única partida!`
-                    );*/
+                    bot_1.default.sendRankAnnounce(ngdr, `${this.discordMention} bateu o próprio recorde pessoal de mortes com ${ngdr.elements[0].key}, morrendo ${ngdr.elements[0].value} em uma única partida!`);
                 }
             }
             this.gameDeathRank = ngdr;

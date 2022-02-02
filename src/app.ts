@@ -7,10 +7,10 @@ import Champion from "./champion";
 
 
 (async () => {
-    await Bot.initialize(); 
     await Champion.loadChampions();
     await Summoner.loadSummoners();
     await Rank.loadAllRanks();
+    await Bot.initialize(); 
     const loop = async () => {
         try {
             await Summoner.updateAllSummoners();

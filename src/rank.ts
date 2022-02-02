@@ -1,3 +1,4 @@
+import Bot from "./bot";
 import Champion from "./champion";
 import connection from "./connection";
 import Summoner from "./summoner";
@@ -41,22 +42,16 @@ async function updateRanks() {
             switch (ranks[i].name) {
                 case "gameDeathRank":
                     if (oel.key.dbId != nel.key.dbId) {
-                        /*Bot.sendAnnounce(
-                            `${nel.key.summoner.discordMention} ta dando show de ${nel.key.championName}, morreu ${nel.value} em uma única partida, tomando o 1º lugar dessa lixeira de ${oel.key.championName} que o indivíduo ${oel.key.summoner.discordMention} chama de campeão!`
-                        );*/
+                        Bot.sendRankAnnounce(newRank,`${nel.key.summoner.discordMention} acabou de superar ${oel.key.summoner.discordMention} tomando seu 1º lugar no ranking.`);
                     }
                 case "totalDeathRank":
                     if (oel.key.dbId != nel.key.dbId) {
-                        /*Bot.sendAnnounce(
-                            `${oel.key.discordMention} foi superado por ${nel.key.discordMention} tomando o 1º lugar no ranking geral de mortes com um total de ${nel.value} mortes!`
-                        );*/
+                        Bot.sendRankAnnounce(newRank,`${nel.key.discordMention} acabou de superar ${oel.key.discordMention} tomando seu 1º lugar no ranking.`);
                     }
                     break;
                 default:
                     if (oel.key.dbId != nel.key.dbId) {
-                        /*Bot.sendAnnounce(
-                            `${nel.key.discordMention} ta dando aula de como jogar com ${getChampionName(parseInt(ranks[i].name))}, morreu um total de ${nel.value} vezes tomando o 1º lugar de ${oel.key.discordMention} no ranking total de mortes com o campeão!`
-                        );*/
+                        Bot.sendRankAnnounce(newRank,`${nel.key.discordMention} acabou de superar ${oel.key.discordMention} tomando seu 1º lugar no ranking.`);
                     }
                     break;
             }

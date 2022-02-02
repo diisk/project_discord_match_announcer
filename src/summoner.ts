@@ -4,6 +4,7 @@ import connection from "./connection";
 import Champion from "./champion";
 import { normalizeSpaces } from "./utils";
 import Match from "./match";
+import Bot from "./bot";
 
 const summoners: Summoner[] = [];
 
@@ -57,13 +58,12 @@ class Summoner {
                                 gameId: gameId,
                                 championId: participants[i].championId,
                             }
-                            sum.lastPlayed = null;
                         }
                     }
                     Match.addCurrentMatch(gameId, gameMode, gameQueueConfigId);
                 }
             } else {
-                if (!this.lastPlayed) {
+                if (this.actualMatch) {
                     this.actualMatch = null;
                     this.lastPlayed = new Date();
                 }
@@ -101,14 +101,14 @@ class Summoner {
             const oldEls = this.gameDeathRank.elements;
             if (ngdr.elements[0].key == oldEls[0].key) {
                 if (ngdr.elements[0].value != oldEls[0].value) {
-                    /*Bot.sendAnnounce(
+                    Bot.sendRankAnnounce(ngdr,
                         `${this.discordMention} possui um novo recorde pessoal de mortes em uma única partida, liderando com ${ngdr.elements[0].key}, morrendo ${ngdr.elements[0].value} vezes!`
-                    );*/
+                        );
                 }
             } else {
-                /*Bot.sendAnnounce(
-                    `${summoner.discordMention} bateu o próprio recorde pessoal de mortes com ${ngdr.elements[0].key}, morrendo ${ngdr.elements[0].value} em uma única partida!`
-                );*/
+                Bot.sendRankAnnounce(ngdr,
+                    `${this.discordMention} bateu o próprio recorde pessoal de mortes com ${ngdr.elements[0].key}, morrendo ${ngdr.elements[0].value} em uma única partida!`
+                    );
             }
         }
         this.gameDeathRank = ngdr;

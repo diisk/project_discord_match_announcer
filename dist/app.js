@@ -18,10 +18,10 @@ const rank_1 = __importDefault(require("./rank"));
 const match_1 = __importDefault(require("./match"));
 const champion_1 = __importDefault(require("./champion"));
 (() => __awaiter(void 0, void 0, void 0, function* () {
-    yield bot_1.default.initialize();
     yield champion_1.default.loadChampions();
     yield summoner_1.default.loadSummoners();
     yield rank_1.default.loadAllRanks();
+    yield bot_1.default.initialize();
     const loop = () => __awaiter(void 0, void 0, void 0, function* () {
         try {
             yield summoner_1.default.updateAllSummoners();
