@@ -20,16 +20,19 @@ const match_1 = __importDefault(require("./match"));
 const bot_1 = __importDefault(require("./bot"));
 const summoners = [];
 class Summoner {
-    constructor(name, discordTag, dbId, summonerIds, gameDeathRank) {
+    constructor(name, discord_id, dbId, summonerIds, gameDeathRank) {
         this.actualMatch = null;
         this.lastPlayed = null;
         this.name = name;
-        this.discordMention = discordTag;
+        this.discordMention = `<@${discord_id}>`;
         this.dbId = dbId;
         this.id = summonerIds.id;
         this.puuid = summonerIds.puuid;
         this.accountId = summonerIds.accountId;
         this.gameDeathRank = gameDeathRank;
+    }
+    get discordId() {
+        return this.discordMention.replace(/[^0-9]/g, '');
     }
     update() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -116,7 +119,7 @@ class Summoner {
             for (let i in result) {
                 const name = result[i].summoner_name;
                 const sis = yield getSummonerIds(name);
-                summoners.push(new Summoner(name, result[i].discord_tag, result[i].id, sis, yield getGameDeathRank(result[i].id)));
+                summoners.push(new Summoner(name, result[i].discord_id, result[i].id, sis, yield getGameDeathRank(result[i].id)));
             }
         });
     }

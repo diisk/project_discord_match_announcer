@@ -1,13 +1,25 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const champion_1 = __importDefault(require("./champion"));
+const stats_1 = __importDefault(require("./stats"));
 const config_json_1 = require("./config.json");
+const summoner_1 = require("./summoner");
 var client;
 var announces = [];
+var cooldowns = [];
 const exampleEmbed = new discord_js_1.MessageEmbed()
     .setColor('#b11616')
     .setTitle('MiB DiisK')
@@ -20,6 +32,60 @@ const exampleEmbed = new discord_js_1.MessageEmbed()
     .setTimestamp();
 //.setFooter({ text: 'Some footer text here', iconURL: 'https://i.imgur.com/AfFp7pu.png' });
 class Bot {
+    static getEmbedStats(summoner) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const stats = yield stats_1.default.getStats(summoner.dbId);
+            let obs = "";
+            const embed = new discord_js_1.MessageEmbed()
+                .setColor('#FFFFFF')
+                .setThumbnail(config_json_1.deathImageURL)
+                .setTitle(`Estatísticas de ${summoner.name}`)
+                .setAuthor({ name: 'Deathspectator', iconURL: config_json_1.karthusImageURL })
+                .setTimestamp()
+                .addFields({ name: 'Posição', value: `${stats.totalDeathsPos}.`, inline: true }, { name: 'Total de mortes', value: `${stats.totalDeaths}`, inline: true }, { name: 'Média por partida', value: `${stats.perGameDeathAverage}`, inline: true })
+                .setDescription(`Resumo de ${summoner.discordMention}\n`);
+            if (stats.totalDeathsDif > 0) {
+                obs += `Morreu ${stats.totalDeathsDif} mais vezes do que a média de mortes do servidor.\n`;
+            }
+            else if (stats.totalDeathsDif < 0) {
+                obs += `Morreu ${stats.totalDeathsDif} menos vezes do que a média de mortes do servidor.\n`;
+            }
+            let champName = champion_1.default.getChampionBy(stats.topDeathsGame.champion_key).name;
+            embed.addFields({ name: 'Top Mortes Partida Única', value: `Rank: ${stats.topDeathsGame.totalDeathsPos}`, inline: true }, { name: 'Campeão', value: `${champName}`, inline: true }, { name: 'Mortes', value: `${stats.topDeathsGame.totalDeaths}`, inline: true });
+            let m = stats.topDeathsGame.perGameDeathAverageDif;
+            if (m != 0) {
+                obs += `Morreu ${m > 0 ? `${m}% mais` : `${m * -1}% menos`} do que a média do servidor em uma única partida com ${champName}.\n`;
+            }
+            if (stats.mostPlayedChampion.key == stats.topDeathsChampion.key) {
+                champName = champion_1.default.getChampionBy(stats.mostPlayedChampion.key).name;
+                embed.addFields({ name: 'Campeão destaque', value: `${champName}`, inline: true }, { name: 'Pos(Rank Geral)', value: `${stats.mostPlayedChampion.totalDeathsPos}`, inline: true }, { name: 'Total/Média de mortes', value: `${stats.mostPlayedChampion.totalDeaths} / ${stats.mostPlayedChampion.perGameDeathAverage}`, inline: true });
+                m = stats.mostPlayedChampion.perGameDeathAverageDif;
+                if (m == 0) {
+                    obs += `${champName} é o seu campeão mais jogado e também o campeão com mais mortes.\n`;
+                }
+                else {
+                    obs += `${champName} é o seu campeão mais jogado e também o campeão com mais mortes, com ele você morre 
+				${m > 0 ? `${m}% mais` : `${m * -1}% menos`} do que a média do servidor.\n`;
+                }
+            }
+            else {
+                champName = champion_1.default.getChampionBy(stats.topDeathsChampion.key).name;
+                embed.addFields({ name: 'Campeão com mais mortes', value: `${champName}`, inline: true }, { name: 'Pos(Rank Geral)', value: `${stats.topDeathsChampion.totalDeathsPos}`, inline: true }, { name: 'Total/Média de mortes', value: `${stats.topDeathsChampion.totalDeaths} / ${stats.topDeathsChampion.perGameDeathAverage}`, inline: true });
+                m = stats.topDeathsChampion.perGameDeathAverageDif;
+                if (m != 0) {
+                    obs += `Morreu ${m > 0 ? `${m}% mais` : `${m * -1}% menos`} do que a média do servidor com ${champName}.\n`;
+                }
+                champName = champion_1.default.getChampionBy(stats.mostPlayedChampion.key).name;
+                embed.addFields({ name: 'Campeão mais jogado', value: `${champName}`, inline: true }, { name: 'Pos(Rank Geral)', value: `${stats.mostPlayedChampion.totalDeathsPos}`, inline: true }, { name: 'Total/Média de mortes', value: `${stats.mostPlayedChampion.totalDeaths} / ${stats.mostPlayedChampion.perGameDeathAverage}`, inline: true });
+                m = stats.mostPlayedChampion.perGameDeathAverageDif;
+                if (m != 0) {
+                    obs += `Morreu ${m > 0 ? `${m}% mais` : `${m * -1}% menos`} do que a média do servidor com ${champName}.\n`;
+                }
+            }
+            embed.addFields({ name: 'Destaques:', value: obs, inline: false });
+            return embed;
+        });
+    }
     static sendRankAnnounce(rank, notes) {
         const { title, description, thumbURL, fields } = getRankData(rank);
         console.log(fields);
@@ -92,9 +158,25 @@ class Bot {
     static initialize() {
         client = new discord_js_1.Client({ intents: [discord_js_1.Intents.FLAGS.GUILDS, discord_js_1.Intents.FLAGS.GUILD_MESSAGES] });
         client.login(config_json_1.discord_token);
-        client.on('messageCreate', (message) => {
-            //TRATAR AS MSGS
-        });
+        client.on('messageCreate', (message) => __awaiter(this, void 0, void 0, function* () {
+            if (message.author.bot)
+                return;
+            if (!message.content.startsWith(config_json_1.prefix))
+                return;
+            if (!cooldowns.includes(message.author.id)) {
+                const sums = (0, summoner_1.getSummoners)();
+                for (let i in sums) {
+                    if (sums[i].discordId == message.author.id) {
+                        message.reply({ embeds: [yield this.getEmbedStats(sums[i])] });
+                        break;
+                    }
+                }
+                addInCooldown(message.author.id);
+            }
+            else {
+                message.reply("Epa, pera lá, muita calma, ladrão, cadê o espírito imortal do capão?");
+            }
+        }));
         client.once('ready', () => {
             setInterval(() => {
                 if (announces.length > 0) {
@@ -103,34 +185,22 @@ class Bot {
                     client.channels.cache.get(config_json_1.channelId).send({ embeds: [embed] });
                 }
             }, 200);
-            // const rank:Rank = {
-            // 	name:"Zeri",
-            // 	elements:[
-            // 		{
-            // 			key:{name:"MiB DiisK"},
-            // 			value:80
-            // 		},
-            // 		{
-            // 			key:{name:"MiB DiisK"},
-            // 			value:80
-            // 		},
-            // 		{
-            // 			key:{name:"MiB DiisK"},
-            // 			value:80
-            // 		},
-            // 		{
-            // 			key:{name:"MiB DiisK"},
-            // 			value:80
-            // 		},
-            // 		{
-            // 			key:{name:"MiB DiisK"},
-            // 			value:80
-            // 		},
-            // 	]
-            // }
-            // this.sendRankAnnounce(rank,"TESTE");
         });
     }
+}
+function addInCooldown(discordId) {
+    cooldowns.push(discordId);
+    const id = discordId;
+    setTimeout(() => {
+        if (cooldowns.includes(id)) {
+            for (let i = 0; i < cooldowns.length; i++) {
+                if (cooldowns[i] == id) {
+                    cooldowns.splice(i, 1);
+                    break;
+                }
+            }
+        }
+    }, 2000);
 }
 function getRankData(rank) {
     let rankData;

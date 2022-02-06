@@ -30,14 +30,18 @@ class Summoner {
     lastPlayed: Date | null = null;
     gameDeathRank: Rank;
 
-    constructor(name: string, discordTag: string, dbId: number, summonerIds: SummonerIds, gameDeathRank: Rank) {
+    constructor(name: string, discord_id: string, dbId: number, summonerIds: SummonerIds, gameDeathRank: Rank) {
         this.name = name;
-        this.discordMention = discordTag;
+        this.discordMention = `<@${discord_id}>`;
         this.dbId = dbId;
         this.id = summonerIds.id;
         this.puuid = summonerIds.puuid;
         this.accountId = summonerIds.accountId;
         this.gameDeathRank = gameDeathRank;
+    }
+
+    get discordId(){
+        return this.discordMention.replace(/[^0-9]/g,'');
     }
 
     async update() {
@@ -127,7 +131,7 @@ class Summoner {
         for (let i in result) {
             const name = result[i].summoner_name;
             const sis = await getSummonerIds(name);
-            summoners.push(new Summoner(name, result[i].discord_tag, result[i].id, sis, await getGameDeathRank(result[i].id)));
+            summoners.push(new Summoner(name, result[i].discord_id, result[i].id, sis, await getGameDeathRank(result[i].id)));
         }
     }
 

@@ -50,11 +50,6 @@ function updateRanks() {
                         if (oel.key.dbId != nel.key.dbId) {
                             bot_1.default.sendRankAnnounce(newRank, `${nel.key.summoner.discordMention} acabou de superar ${oel.key.summoner.discordMention} tomando seu 1º lugar no ranking.`);
                         }
-                    case "totalDeathRank":
-                        if (oel.key.dbId != nel.key.dbId) {
-                            bot_1.default.sendRankAnnounce(newRank, `${nel.key.discordMention} acabou de superar ${oel.key.discordMention} tomando seu 1º lugar no ranking.`);
-                        }
-                        break;
                     default:
                         if (oel.key.dbId != nel.key.dbId) {
                             bot_1.default.sendRankAnnounce(newRank, `${nel.key.discordMention} acabou de superar ${oel.key.discordMention} tomando seu 1º lugar no ranking.`);
