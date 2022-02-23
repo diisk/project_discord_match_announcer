@@ -164,14 +164,19 @@ class Bot {
             if (!message.content.startsWith(config_json_1.prefix))
                 return;
             if (!cooldowns.includes(message.author.id)) {
-                const sums = (0, summoner_1.getSummoners)();
-                for (let i in sums) {
-                    if (sums[i].discordId == message.author.id) {
-                        message.reply({ embeds: [yield this.getEmbedStats(sums[i])] });
-                        break;
+                const args = message.content.substring(1, message.content.length).split(' ');
+                if (args.length > 0) {
+                    if (args[0].toLowerCase() == "stats") {
+                        const sums = (0, summoner_1.getSummoners)();
+                        for (let i in sums) {
+                            if (sums[i].discordId == message.author.id) {
+                                message.reply({ embeds: [yield this.getEmbedStats(sums[i])] });
+                                break;
+                            }
+                        }
+                        addInCooldown(message.author.id);
                     }
                 }
-                addInCooldown(message.author.id);
             }
             else {
                 message.reply("Epa, pera lá, muita calma, ladrão, cadê o espírito imortal do capão?");

@@ -195,15 +195,21 @@ class Bot {
 			if (message.author.bot) return;
 			if (!message.content.startsWith(prefix)) return;
 			if (!cooldowns.includes(message.author.id)) {
-				const sums = getSummoners();
-				for (let i in sums) {
-					if (sums[i].discordId == message.author.id) {
-						message.reply({ embeds: [await this.getEmbedStats(sums[i])] });
-						break;
+				
+				const args = message.content.substring(1, message.content.length).split(' ');
+				if (args.length > 0) {
+					if (args[0].toLowerCase() == "stats") {
+						const sums = getSummoners();
+						for (let i in sums) {
+							if (sums[i].discordId == message.author.id) {
+								message.reply({ embeds: [await this.getEmbedStats(sums[i])] });
+								break;
+							}
+						}
+						addInCooldown(message.author.id);
 					}
 				}
-				addInCooldown(message.author.id);
-			}else{
+			} else {
 				message.reply("Epa, pera lá, muita calma, ladrão, cadê o espírito imortal do capão?");
 			}
 
